@@ -1,2 +1,16 @@
 **/*.txt
 !**/test.txt
+
+.DS_Store
+
+#User-specific files
+.idea
+
+#File-based project format
+*.iws
+
+#Output
+**/out/*
+**/bin/*
+
+!**/.gitkeep
