@@ -1,0 +1,5 @@
+this
+is
+a directory
+where input files can be saved without being tracked by git
+
