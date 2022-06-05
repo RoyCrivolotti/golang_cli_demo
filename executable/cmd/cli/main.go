@@ -6,11 +6,9 @@ import (
 	url2 "net/url"
 	"os"
 	"os/signal"
+	"refurbedchallenge/executable/internal/services"
 	"refurbedchallenge/executable/pkg"
-	"refurbedchallenge/notifier/constants"
-	"refurbedchallenge/notifier/src"
 	"syscall"
-	"time"
 )
 
 //TODO: Build async notifier that allows the end client to handle errors and document assumption taken (ie. return all errors at the end for them to manually handle it?)
@@ -18,6 +16,7 @@ import (
 //TODO: Abstract code to corresponding pkgs, use Docker to automatize getting the dependencies, building the executable and running the app, maybe add a makefile to automatize running every unit test
 
 func main() {
+	//Exiting gracefully in case of SIGINT
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
@@ -29,14 +28,17 @@ func main() {
 
 	fmt.Println("Executing program")
 
-	//Printing arguments passed for debugging
-	for i, arg := range os.Args {
-		fmt.Printf("Argument at %d: %s\n", i, arg)
-	}
-
 	//Getting the custom configuration from flags
 	url := flag.String("url", "http://localhost:8080/notify", "Configure endpoint where events will be notified")
+	debug := flag.Bool("debug", false, "More printing statements are used when in debug mode")
 	interval := flag.Int64("i", 1000, "Configure interval of time for messages in stdin to be processed (milliseconds)")
+
+	//Printing arguments passed for debugging
+	if *debug == true {
+		for i, arg := range os.Args {
+			fmt.Printf("Argument at %d: %s\n", i, arg)
+		}
+	}
 
 	//Parsing flags
 	flag.Parse()
@@ -49,8 +51,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("URL is %s\n", *url)
-	fmt.Printf("Interval is %d\n", *interval)
+	if *debug == true {
+		//Printing values being used after parsing
+		fmt.Printf("URL is %s\n", *url)
+		fmt.Printf("Interval is %d\n", *interval)
+	}
 
 	//Reading input stream from stdin
 	lines, _ := pkg.ReadLinesFromStdin() //TODO handle err and document the assumption taken
@@ -60,39 +65,6 @@ func main() {
 	}
 
 	//Instantiate notifier service
-	notifierClient := src.NewNotifier(*url)
-
-	ticker := time.NewTicker(time.Duration(*interval) * time.Millisecond)
-	quit := make(chan struct{})
-
-	var channels []chan constants.NotificationError
-
-Loop:
-	for {
-		select {
-		case <-ticker.C:
-			if len(lines) == 0 {
-				break Loop
-			}
-
-			//Getting first element from lines slice
-			line := lines[0]
-			//Popping the element
-			lines = lines[1:]
-			//Printing the popped element
-			fmt.Printf("Current line: %s - Waiting %d milliseconds\n", line, *interval)
-
-			c := notifierClient.Notify(line)
-			channels = append(channels, c)
-		case <-quit:
-			ticker.Stop()
-			break Loop
-		}
-	}
-
-	//Printing lines that encountered an error for the user to manually handle them
-	for _, c := range channels {
-		err := <-c
-		fmt.Printf("Error: Line '%s', error: %v\n", err.Message, err.Error)
-	}
+	messageService := services.NewMessageService(*url)
+	messageService.ProcessMessages(lines, *interval)
 }

@@ -15,7 +15,7 @@ import (
 //The exe reads standard input and every new line is a message to send to the library for propagation
 //Consider shutdown by SIGINT
 
-type INotifier interface {
+type INotifierClient interface {
 	Notify(message string) chan constants.NotificationError
 }
 
@@ -24,7 +24,7 @@ type notifier struct {
 	client IHttpClient
 }
 
-func NewNotifier(url string) INotifier {
+func NewNotifierClient(url string) INotifierClient {
 	return &notifier{
 		url:    url,
 		client: NewHttpClient(),
