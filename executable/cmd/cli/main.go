@@ -6,7 +6,9 @@ import (
 	url2 "net/url"
 	"os"
 	"os/signal"
-	"refurbedexe/pkg"
+	"refurbedchallenge/executable/pkg"
+	"refurbedchallenge/notifier/constants"
+	"refurbedchallenge/notifier/src"
 	"syscall"
 	"time"
 )
@@ -57,9 +59,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	//Instantiate notifier service
+	notifierClient := src.NewNotifier(*url)
+
 	ticker := time.NewTicker(time.Duration(*interval) * time.Millisecond)
 	quit := make(chan struct{})
 
+	var channels []chan constants.NotificationError
+
+Loop:
 	for {
 		select {
 		case <-ticker.C:
@@ -70,9 +78,20 @@ func main() {
 			//Printing the popped element
 			fmt.Printf("Current line: %s\n", line)
 			fmt.Printf("Waiting %d milliseconds\n", *interval)
+
+			c := notifierClient.Notify(line)
+			channels = append(channels, c)
 		case <-quit:
 			ticker.Stop()
-			return
+			break Loop
 		}
 	}
+
+	//Printing lines that encountered an error for the user to manually handle them
+	for _, c := range channels {
+		err := <-c
+		fmt.Printf("Error: Line '%s', error: %v\n", err.Message, err.Error)
+	}
+
+	return
 }
