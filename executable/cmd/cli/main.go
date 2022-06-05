@@ -71,13 +71,16 @@ Loop:
 	for {
 		select {
 		case <-ticker.C:
+			if len(lines) == 0 {
+				break Loop
+			}
+
 			//Getting first element from lines slice
 			line := lines[0]
 			//Popping the element
 			lines = lines[1:]
 			//Printing the popped element
-			fmt.Printf("Current line: %s\n", line)
-			fmt.Printf("Waiting %d milliseconds\n", *interval)
+			fmt.Printf("Current line: %s - Waiting %d milliseconds\n", line, *interval)
 
 			c := notifierClient.Notify(line)
 			channels = append(channels, c)
@@ -92,6 +95,4 @@ Loop:
 		err := <-c
 		fmt.Printf("Error: Line '%s', error: %v\n", err.Message, err.Error)
 	}
-
-	return
 }
