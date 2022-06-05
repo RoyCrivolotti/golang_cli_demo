@@ -1,6 +1,8 @@
 package src
 
-import "refurbedchallenge/notifier/constants"
+import (
+	"refurbedchallenge/notifier/constants"
+)
 
 //Library
 //Create HTTP notifications client -> Configurable URL to which to propagate notifications
@@ -29,6 +31,7 @@ func NewNotifier(url string) INotifier {
 	}
 }
 
+//Notify sends the message to the configured URL via POST message, using channels to avoid blocking operations
 func (n *notifier) Notify(message string) chan constants.NotificationError {
 	channel := make(chan constants.NotificationError)
 	go func() {
