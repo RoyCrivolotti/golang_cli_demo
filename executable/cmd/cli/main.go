@@ -32,7 +32,7 @@ func main() {
 	//Getting the custom configuration from flags
 	url := flag.String("url", "http://localhost:8080/notify", "Configure endpoint where events will be notified")
 	debug := flag.Bool("debug", false, "More printing statements are used when in debug mode")
-	interval := flag.Int64("i", 1000, "Configure interval of time for messages in stdin to be processed (milliseconds)")
+	interval := flag.Int64("i", 100, "Configure interval of time for messages in stdin to be processed (milliseconds)")
 
 	//Printing arguments passed for debugging
 	if *debug == true {
@@ -60,6 +60,7 @@ func main() {
 
 	//Reading input stream from stdin
 	lines, err := pkg.ReadLinesFromStdin() //TODO handle err and document the assumption taken
+
 	if len(lines) == 0 || err != nil {
 		fmt.Println("Failed to read input; please input a valid stream of text lines")
 
