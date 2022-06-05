@@ -2,6 +2,7 @@ package services_test
 
 import (
 	"errors"
+	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"refurbedchallenge/notifier/constants"
 	mock_src "refurbedchallenge/notifier/src/mock"
 	"testing"
+	"time"
 )
 
 func TestProcessMessages(t *testing.T) {
@@ -49,7 +51,7 @@ func TestProcessMessages(t *testing.T) {
 				[]string{"this", "is", "", "", "testing"},
 				[]string{"this", "is", "", "", "testing"},
 			},
-			"Line '', error: error\nLine '', error: error\nLine '', error: error\nLine 'testing', error: error\nLine 'testing', error: error\n",
+			"Line 'this', error: error\nLine 'is', error: error\nLine '', error: error\nLine '', error: error\nLine 'testing', error: error\n",
 		},
 	}
 	for _, tt := range tests {
@@ -60,13 +62,14 @@ func TestProcessMessages(t *testing.T) {
 			for i, line := range tt.input.Lines {
 				channel := make(chan constants.NotificationError)
 
-				go func() {
+				go func(i int, line string) {
 					if i >= 0 && i < len(tt.input.ErrorLines) && line == tt.input.ErrorLines[i] {
+						fmt.Println(line)
 						channel <- constants.NotificationError{Error: errors.New("error"), Message: line}
 					} else {
 						channel <- constants.NotificationError{}
 					}
-				}()
+				}(i, line)
 
 				notifierClientMock.EXPECT().Notify(line).Return(channel).Times(1)
 			}
@@ -78,6 +81,10 @@ func TestProcessMessages(t *testing.T) {
 
 			//Match the output captured with the expected result
 			output, err := startCapturingStdout()
+
+			//This is only necessary because we are testing while capturing stdout and, due to race conditions, it bleeds into the following test
+			time.Sleep(1 * time.Second)
+
 			assert.Equal(t, nil, err)
 			assert.Equal(t, tt.want, output)
 		})
