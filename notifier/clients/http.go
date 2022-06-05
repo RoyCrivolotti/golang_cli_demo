@@ -3,14 +3,13 @@ package clients
 import (
 	"bytes"
 	"encoding/json"
-	"io"
 	"net/http"
 )
 
 //go:generate mockgen -source=./http.go -destination=./mock/http_mock.go
 
 type IHttpClient interface {
-	Post(url string, data interface{}) ([]byte, error)
+	Post(url string, data interface{}) (*http.Response, error)
 }
 
 type httpClient struct {
@@ -21,7 +20,7 @@ func NewHttpClient() IHttpClient {
 }
 
 //Post sends the data to the url and returns the response's body as a byte array and an error, should one occur
-func (h *httpClient) Post(url string, data interface{}) ([]byte, error) {
+func (h *httpClient) Post(url string, data interface{}) (*http.Response, error) {
 	requestBody := map[string]interface{}{
 		"message": data,
 	}
@@ -33,16 +32,9 @@ func (h *httpClient) Post(url string, data interface{}) ([]byte, error) {
 
 	response, err := http.Post(url, "application/json", buffer)
 
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
-	}(response.Body)
-
 	if err != nil {
 		return nil, err
 	}
 
-	var responseBody []byte
-	response.Body.Read(responseBody)
-
-	return responseBody, nil
+	return response, nil
 }

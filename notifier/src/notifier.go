@@ -1,6 +1,10 @@
 package src
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"net/http"
 	"refurbedchallenge/notifier/clients"
 	"refurbedchallenge/notifier/constants"
 )
@@ -38,8 +42,11 @@ func NewNotifierClient(url string) INotifierClient {
 func (n *notifier) Notify(message string) chan constants.NotificationError {
 	channel := make(chan constants.NotificationError)
 	go func() {
-		if _, err := n.client.Post(n.url, message); err != nil {
+		if res, err := n.client.Post(n.url, message); err != nil {
 			channel <- constants.NotificationError{Error: err, Message: message}
+		} else if res.StatusCode >= 400 && res.StatusCode <= 599 {
+			errMsg := handleHttpError(res)
+			channel <- constants.NotificationError{Error: errMsg, Message: message}
 		} else {
 			channel <- constants.NotificationError{}
 		}
@@ -48,4 +55,21 @@ func (n *notifier) Notify(message string) chan constants.NotificationError {
 	}()
 
 	return channel
+}
+
+func handleHttpError(res *http.Response) error {
+	resBody := new(map[string]interface{})
+
+	//Return the response's error's body if possible, otherwise return the low level error
+	err := json.NewDecoder(res.Body).Decode(resBody)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Unexpected error: %s", err.Error()))
+	}
+
+	b, err := json.Marshal(resBody)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Unexpected error: %s", err.Error()))
+	} else {
+		return errors.New(string(b))
+	}
 }
