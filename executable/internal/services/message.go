@@ -9,7 +9,7 @@ import (
 )
 
 type IMessageService interface {
-	ProcessMessages(w io.Writer, lines []string, interval int64, debug bool)
+	ProcessMessages(w io.Writer, lines []string, interval int64, debug bool) []string
 }
 
 type service struct {
@@ -24,7 +24,7 @@ func NewMessageService(notifier src.INotifierClient) IMessageService {
 
 //ProcessMessages receives a slice of messages to process and the interval of time to pause between each one.
 //For every message that fails to be processed, an error message is printed
-func (s *service) ProcessMessages(w io.Writer, lines []string, interval int64, debug bool) {
+func (s *service) ProcessMessages(w io.Writer, lines []string, interval int64, debug bool) []string {
 	ticker := time.NewTicker(time.Duration(interval) * time.Millisecond)
 	quit := make(chan struct{})
 
@@ -55,13 +55,19 @@ Loop:
 		}
 	}
 
+	var errors []string
+
 	//Printing lines that encountered an error for the user to manually handle them
 	for _, c := range channels {
 		err := <-c
 
 		//Print an error only when there is one
 		if err != (constants.NotificationError{}) {
-			_, _ = fmt.Fprintf(w, "Line '%s', error: %v\n", err.Message, err.Error)
+			errMsg := fmt.Sprintf("Line '%s', error: %v\n", err.Message, err.Error)
+			errors = append(errors, errMsg)
+			_, _ = fmt.Fprint(w, errMsg)
 		}
 	}
+
+	return errors
 }

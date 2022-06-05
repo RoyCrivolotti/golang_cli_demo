@@ -12,10 +12,6 @@ import (
 	"syscall"
 )
 
-//TODO: Build async notifier that allows the end client to handle errors and document assumption taken (ie. return all errors at the end for them to manually handle it?)
-//TODO: Consume notifier and do integration test, then write unit tests..
-//TODO: Abstract code to corresponding pkgs, use Docker to automatize getting the dependencies, building the executable and running the app, maybe add a makefile to automatize running every unit test
-
 func main() {
 	//Exiting gracefully in case of SIGINT
 	c := make(chan os.Signal)
@@ -59,7 +55,7 @@ func main() {
 	}
 
 	//Reading input stream from stdin
-	lines, err := pkg.ReadLinesFromStdin() //TODO handle err and document the assumption taken
+	lines, err := pkg.ReadLinesFromStdin()
 
 	if len(lines) == 0 || err != nil {
 		fmt.Println("Failed to read input; please input a valid stream of text lines")

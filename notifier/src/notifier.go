@@ -52,12 +52,12 @@ func handleHttpError(res *http.Response) error {
 	//Return the response's error's body if possible, otherwise return the low level error
 	err := json.NewDecoder(res.Body).Decode(resBody)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Unexpected error: %s", err.Error()))
+		return errors.New(fmt.Sprintf("Unexpected error: Status code %d", res.StatusCode))
 	}
 
 	b, err := json.Marshal(resBody)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Unexpected error: %s", err.Error()))
+		return errors.New(fmt.Sprintf("Unexpected error: Status code: %d - %s", res.StatusCode, err.Error()))
 	} else {
 		return errors.New(string(b))
 	}
