@@ -15,3 +15,5 @@ This repository contains my challenge for `refurbed`.
 ### How to run unit tests
 
 ### Next steps
+
+- Instead of adding `replace` directives to work across multiple modules, use Go 1.18's `workspaces`: https://go.dev/doc/tutorial/workspaces
