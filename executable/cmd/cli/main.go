@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"refurbedchallenge/executable/internal/services"
 	"refurbedchallenge/executable/pkg"
+	"refurbedchallenge/notifier/src"
 	"syscall"
 )
 
@@ -70,6 +71,6 @@ func main() {
 	}
 
 	//Instantiate notifier service
-	messageService := services.NewMessageService(*url)
-	messageService.ProcessMessages(lines, *interval)
+	messageService := services.NewMessageService(src.NewNotifierClient(*url))
+	messageService.ProcessMessages(os.Stdout, lines, *interval, *debug)
 }
