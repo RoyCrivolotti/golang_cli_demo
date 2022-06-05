@@ -58,9 +58,14 @@ func main() {
 	}
 
 	//Reading input stream from stdin
-	lines, _ := pkg.ReadLinesFromStdin() //TODO handle err and document the assumption taken
-	if len(lines) == 0 {
+	lines, err := pkg.ReadLinesFromStdin() //TODO handle err and document the assumption taken
+	if len(lines) == 0 || err != nil {
 		fmt.Println("Failed to read input; please input a valid stream of text lines")
+
+		if *debug == true {
+			fmt.Printf("Error: %s\n", err.Error())
+		}
+
 		os.Exit(1)
 	}
 

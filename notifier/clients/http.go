@@ -1,4 +1,4 @@
-package src
+package clients
 
 import (
 	"bytes"
@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 )
+
+//go:generate mockgen -source=./http.go -destination=./mock/http_mock.go
 
 type IHttpClient interface {
 	Post(url string, data interface{}) ([]byte, error)

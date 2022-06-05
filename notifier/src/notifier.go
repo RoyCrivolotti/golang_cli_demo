@@ -1,6 +1,7 @@
 package src
 
 import (
+	"refurbedchallenge/notifier/clients"
 	"refurbedchallenge/notifier/constants"
 )
 
@@ -15,19 +16,21 @@ import (
 //The exe reads standard input and every new line is a message to send to the library for propagation
 //Consider shutdown by SIGINT
 
+//go:generate mockgen -source=./notifier.go -destination=./mock/notifier_mock.go
+
 type INotifierClient interface {
 	Notify(message string) chan constants.NotificationError
 }
 
 type notifier struct {
 	url    string
-	client IHttpClient
+	client clients.IHttpClient
 }
 
 func NewNotifierClient(url string) INotifierClient {
 	return &notifier{
 		url:    url,
-		client: NewHttpClient(),
+		client: clients.NewHttpClient(),
 	}
 }
 
