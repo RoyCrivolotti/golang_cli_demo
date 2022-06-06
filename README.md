@@ -9,24 +9,33 @@ This repository contains my challenge for `refurbed`.
 
 ### Assumptions and choices
 
-- **Explaining the use of a monorepo**: While generally, in a production-ready scenario, one would upload code that is
-  meant to be used as a library to a different repository, allowing multiple projects to import it and make use of it,
-  in this specific case I chose to use a monorepo with multiple Go `modules`. This allows me to have a single
-  deliverable and makes it easier to test the integration of both projects locally while debugging. Moreover, this way I
-  can track my own changes and send a deliverable as a repository instead of a zip file.
+- While generally, in a production-ready scenario, one would upload code that is meant to be used as a library to a
+  different repository, allowing multiple projects to import it and make use of it, in this specific case I chose to use
+  a monorepo with multiple Go `modules`. This allows me to have a single deliverable and makes it easier to test the
+  integration of both projects locally while debugging.
 - I assumed that the executable did not need to be interactive, at least not in this first version (
-  see [Next steps](#next-steps))
+  see [Next steps](#next-steps)).
 - I assumed that the URL where the messages are being sent handles receiving multiple requests at once: if the service
-  throws a throttling error, there is no retry logic on the notifier's side at this time
+  throws a throttling error, there is no retry logic on the notifier's side at this time.
+- I implemented two versions of the notification/messaging service:
+    - One using `channels`: The **benefit** of this implementation is that the library itself, which makes the `POST`
+      requests, is async, as required by the exercise. For **negative** aspects, though:
+        - They are less readable and intuitive than `WaitGroups`, since the implementation is more complex
+        - They require both parts to handle the async implementation, the caller and the callee, which means that both
+          have to handle `channels`
+        - The difference in efficiency is extremely marginal, unless working with very costly algorithms such as complex
+          graph traversals
+        - They make testing incredibly more complicated
+    - Another one using `WaitGroups`: This implementation is more readable and easier to understand, the **negative**
+      aspect of it being that the library itself, which makes the `POST` requests, is not in itself `async` in this
+      version; this means that the consumer has to ensure that each call is asynchronous 100% on their side.
 
 ### How to test app locally
 
-- First, create the test `txt` file that is meant to be streamed to the CLI, and save it in the following
-  directory: `./executable/test_files/FILE_NAME.txt`
+- First, create the test `txt` file that is meant to be streamed to the CLI
 - From the executable module's root folder (that is: `./executable`):
     - Build the executable in the following directory: `./executable/cmd/cli` -> `go build -o bin/exe ./cmd/cli/main.go`
-    - Run the executable with the desired
-      parameters : `./bin/exe -i=1000 -url=http://url.com < test_files/FILE_NAME.txt`
+    - Run the executable with the desired parameters : `./bin/exe -i=1000 -url=http://url.com < path_to_test_file.txt`
     - You can ask what parameters the CLI accepts by running: `./bin/exe -help`
 
 ### How to run unit tests
@@ -46,3 +55,6 @@ This repository contains my challenge for `refurbed`.
 - Improve the styles of the messages being printed for them to be more readable
 - As hinted at in the third point of the [assumptions](#assumptions) section, consider handling a throttling error
   within the notifier itself
+- Create a spy for the `notifier`, which would finally allow me to test the `channels` implementation of the message
+  processing (`ProcessMessagesChannel` method).
+

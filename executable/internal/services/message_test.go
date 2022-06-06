@@ -2,7 +2,6 @@ package services_test
 
 import (
 	"errors"
-	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -12,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestProcessMessages(t *testing.T) {
+func TestProcessMessagesWaitGroup(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -23,7 +22,7 @@ func TestProcessMessages(t *testing.T) {
 			Lines      []string
 			ErrorLines []string
 		}
-		want []string
+		want []constants.NotificationError
 	}{
 		{
 			"TestCase: Happy path",
@@ -32,11 +31,11 @@ func TestProcessMessages(t *testing.T) {
 				Lines      []string
 				ErrorLines []string
 			}{
-				1000,
+				100,
 				[]string{"this", "is", "", "", "testing"},
 				[]string{},
 			},
-			[]string(nil),
+			[]constants.NotificationError(nil),
 		},
 		{
 			"TestCase: Errors due to, for instance, invalid URL for the HTTP POST request",
@@ -45,11 +44,11 @@ func TestProcessMessages(t *testing.T) {
 				Lines      []string
 				ErrorLines []string
 			}{
-				1000,
+				100,
 				[]string{"this", "is", "", "", "testing"},
 				[]string{"this", "is", "", "", "testing"},
 			},
-			[]string([]string{"Line 'this', error: error\n", "Line 'is', error: error\n", "Line '', error: error\n", "Line '', error: error\n", "Line 'testing', error: error\n"}),
+			[]constants.NotificationError{{Error: errors.New("error"), Message: "this"}, {Error: errors.New("error"), Message: "is"}, {Error: errors.New("error"), Message: ""}, {Error: errors.New("error"), Message: ""}, {Error: errors.New("error"), Message: "testing"}},
 		},
 	}
 	for _, tt := range tests {
@@ -58,23 +57,20 @@ func TestProcessMessages(t *testing.T) {
 			service := services.NewMessageService(notifierClientMock)
 
 			for i, line := range tt.input.Lines {
-				channel := make(chan constants.NotificationError)
+				var err constants.NotificationError
 
-				go func(i int, line string) {
-					if i >= 0 && i < len(tt.input.ErrorLines) && line == tt.input.ErrorLines[i] {
-						fmt.Println(line)
-						channel <- constants.NotificationError{Error: errors.New("error"), Message: line}
-					} else {
-						channel <- constants.NotificationError{}
-					}
-				}(i, line)
+				if i >= 0 && i < len(tt.input.ErrorLines) && line == tt.input.ErrorLines[i] {
+					err = constants.NotificationError{Error: errors.New("error"), Message: line}
+				} else {
+					err = constants.NotificationError{}
+				}
 
-				notifierClientMock.EXPECT().Notify(line).Return(channel).Times(1)
+				notifierClientMock.EXPECT().NotifySync(line).Return(err).Times(1)
 			}
 
-			errors := service.ProcessMessages(os.Stdout, tt.input.Lines, tt.input.Interval, false)
+			errs := service.ProcessMessagesWaitGroup(os.Stdout, tt.input.Lines, tt.input.Interval)
 
-			assert.Equal(t, tt.want, errors)
+			assert.Equal(t, tt.want, errs)
 		})
 	}
 }

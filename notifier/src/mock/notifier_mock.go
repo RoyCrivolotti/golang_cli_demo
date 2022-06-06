@@ -34,16 +34,28 @@ func (m *MockINotifierClient) EXPECT() *MockINotifierClientMockRecorder {
 	return m.recorder
 }
 
-// Notify mocks base method.
-func (m *MockINotifierClient) Notify(message string) chan constants.NotificationError {
+// NotifyChannel mocks base method.
+func (m *MockINotifierClient) NotifyChannel(message string, c chan constants.NotificationError) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Notify", message)
-	ret0, _ := ret[0].(chan constants.NotificationError)
+	m.ctrl.Call(m, "NotifyChannel", message, c)
+}
+
+// NotifyChannel indicates an expected call of NotifyChannel.
+func (mr *MockINotifierClientMockRecorder) NotifyChannel(message, c interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyChannel", reflect.TypeOf((*MockINotifierClient)(nil).NotifyChannel), message, c)
+}
+
+// NotifySync mocks base method.
+func (m *MockINotifierClient) NotifySync(message string) constants.NotificationError {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifySync", message)
+	ret0, _ := ret[0].(constants.NotificationError)
 	return ret0
 }
 
-// Notify indicates an expected call of Notify.
-func (mr *MockINotifierClientMockRecorder) Notify(message interface{}) *gomock.Call {
+// NotifySync indicates an expected call of NotifySync.
+func (mr *MockINotifierClientMockRecorder) NotifySync(message interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Notify", reflect.TypeOf((*MockINotifierClient)(nil).Notify), message)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifySync", reflect.TypeOf((*MockINotifierClient)(nil).NotifySync), message)
 }

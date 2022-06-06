@@ -5,6 +5,7 @@
 package mock_clients
 
 import (
+	http "net/http"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,10 +35,10 @@ func (m *MockIHttpClient) EXPECT() *MockIHttpClientMockRecorder {
 }
 
 // Post mocks base method.
-func (m *MockIHttpClient) Post(url string, data interface{}) ([]byte, error) {
+func (m *MockIHttpClient) Post(url string, data interface{}) (*http.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Post", url, data)
-	ret0, _ := ret[0].([]byte)
+	ret0, _ := ret[0].(*http.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

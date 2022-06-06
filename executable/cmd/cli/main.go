@@ -69,5 +69,5 @@ func main() {
 
 	//Instantiate notifier service
 	messageService := services.NewMessageService(src.NewNotifierClient(*url))
-	messageService.ProcessMessages(os.Stdout, lines, *interval, *debug)
+	messageService.ProcessMessagesChannel(os.Stdout, lines, *interval)
 }

@@ -6,8 +6,6 @@ import (
 	"net/http"
 )
 
-//go:generate mockgen -source=./http.go -destination=./mock/http_mock.go
-
 type IHttpClient interface {
 	Post(url string, data interface{}) (*http.Response, error)
 }

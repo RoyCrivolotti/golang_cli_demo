@@ -12,7 +12,8 @@ import (
 //go:generate mockgen -source=./notifier.go -destination=./mock/notifier_mock.go
 
 type INotifierClient interface {
-	Notify(message string, c chan constants.NotificationError)
+	NotifySync(message string) constants.NotificationError
+	NotifyChannel(message string, c chan constants.NotificationError)
 }
 
 type notifier struct {
@@ -27,8 +28,20 @@ func NewNotifierClient(url string) INotifierClient {
 	}
 }
 
-//Notify sends the message to the configured URL via POST message, using channels to avoid blocking operations
-func (n *notifier) Notify(message string, c chan constants.NotificationError) {
+//NotifySync sends the message to the configured URL via POST message
+func (n *notifier) NotifySync(message string) constants.NotificationError {
+	if res, err := n.client.Post(n.url, message); err != nil {
+		return constants.NotificationError{Error: err, Message: message}
+	} else if res.StatusCode >= 400 && res.StatusCode <= 599 {
+		errMsg := handleHttpError(res)
+		return constants.NotificationError{Error: errMsg, Message: message}
+	} else {
+		return constants.NotificationError{}
+	}
+}
+
+//NotifyChannel sends the message to the configured URL via POST message and the channel receives the error, should one be encountered
+func (n *notifier) NotifyChannel(message string, c chan constants.NotificationError) {
 	go func() {
 		if res, err := n.client.Post(n.url, message); err != nil {
 			c <- constants.NotificationError{Error: err, Message: message}
