@@ -14,12 +14,13 @@ different repository from the executable, allowing multiple projects to import i
 case I chose to use a monorepo with multiple Go `modules` because they are part of the same challenge. This allows me to
 have a single deliverable and makes it easier to test locally the integration of both projects locally while debugging.
 
-### Assumptions
+### Assumptions and choices
 
+- As mentioned above ([Explaining the use of a monorepo](#explaining-the-use-of-a-monorepo)), I chose to do the
+  challenge within a single repository, using multiple Go `modules`. This also allows me to track my own changes and
+  send a deliverable as a repository instead of a zip file.
 - I assumed that the executable did not need to be interactive, at least not in this first version (
   see [Next steps](#next-steps))
-- As mentioned above ([Explaining the use of a monorepo](#explaining-the-use-of-a-monorepo)), I chose to do the
-  challenge within a single repository, using multiple Go `modules`
 - I assumed that the URL where the messages are being sent handles receiving multiple requests at once: if the service
   throws a throttling error, there is no retry logic on the notifier's side at this time
 
