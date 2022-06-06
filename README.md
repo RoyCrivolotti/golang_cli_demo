@@ -7,18 +7,13 @@ This repository contains my challenge for `refurbed`.
 - MacBook Pro 13-inch 2020, `macOS Monterrey Version 12.3.1`
 - Go version [`go1.18.3.darwin-amd64.pkg`](https://go.dev/dl/)
 
-### Explaining the use of a monorepo
-
-While generally, in a production-ready scenario, one would upload code that is meant to be used as a library in a
-different repository from the executable, allowing multiple projects to import it and make use of it, in this specific
-case I chose to use a monorepo with multiple Go `modules` because they are part of the same challenge. This allows me to
-have a single deliverable and makes it easier to test locally the integration of both projects locally while debugging.
-
 ### Assumptions and choices
 
-- As mentioned above ([Explaining the use of a monorepo](#explaining-the-use-of-a-monorepo)), I chose to do the
-  challenge within a single repository, using multiple Go `modules`. This also allows me to track my own changes and
-  send a deliverable as a repository instead of a zip file.
+- **Explaining the use of a monorepo**: While generally, in a production-ready scenario, one would upload code that is
+  meant to be used as a library to a different repository, allowing multiple projects to import it and make use of it,
+  in this specific case I chose to use a monorepo with multiple Go `modules`. This allows me to have a single
+  deliverable and makes it easier to test the integration of both projects locally while debugging. Moreover, this way I
+  can track my own changes and send a deliverable as a repository instead of a zip file.
 - I assumed that the executable did not need to be interactive, at least not in this first version (
   see [Next steps](#next-steps))
 - I assumed that the URL where the messages are being sent handles receiving multiple requests at once: if the service
