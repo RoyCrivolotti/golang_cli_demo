@@ -1,13 +1,13 @@
 package services_test
 
 import (
+	"clidemo/executable/internal/services"
+	"clidemo/notifier/constants"
+	mock_src "clidemo/notifier/src/mock"
 	"errors"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"os"
-	"refurbedchallenge/executable/internal/services"
-	"refurbedchallenge/notifier/constants"
-	mock_src "refurbedchallenge/notifier/src/mock"
 	"testing"
 )
 

@@ -1,12 +1,12 @@
 package src_test
 
 import (
+	"clidemo/notifier/constants"
+	"clidemo/notifier/src"
 	"errors"
 	"github.com/golang/mock/gomock"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
-	"refurbedchallenge/notifier/constants"
-	"refurbedchallenge/notifier/src"
 	"testing"
 )
 

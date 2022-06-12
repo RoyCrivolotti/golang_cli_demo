@@ -6,7 +6,7 @@ package mock_src
 
 import (
 	reflect "reflect"
-	constants "refurbedchallenge/notifier/constants"
+	constants "clidemo/notifier/constants"
 
 	gomock "github.com/golang/mock/gomock"
 )

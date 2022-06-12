@@ -1,14 +1,14 @@
 package main
 
 import (
+	"clidemo/executable/internal/services"
+	"clidemo/executable/pkg"
+	"clidemo/notifier/src"
 	"flag"
 	"fmt"
 	url2 "net/url"
 	"os"
 	"os/signal"
-	"refurbedchallenge/executable/internal/services"
-	"refurbedchallenge/executable/pkg"
-	"refurbedchallenge/notifier/src"
 	"syscall"
 )
 

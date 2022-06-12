@@ -1,4 +1,4 @@
-module refurbedchallenge/notifier
+module clidemo/notifier
 
 go 1.18
 

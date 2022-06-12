@@ -1,10 +1,10 @@
 package services
 
 import (
+	"clidemo/notifier/constants"
+	"clidemo/notifier/src"
 	"fmt"
 	"io"
-	"refurbedchallenge/notifier/constants"
-	"refurbedchallenge/notifier/src"
 	"sync"
 	"time"
 )

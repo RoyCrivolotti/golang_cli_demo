@@ -1,12 +1,12 @@
 package src
 
 import (
+	"clidemo/notifier/clients"
+	"clidemo/notifier/constants"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
-	"refurbedchallenge/notifier/clients"
-	"refurbedchallenge/notifier/constants"
 )
 
 //go:generate mockgen -source=./notifier.go -destination=./mock/notifier_mock.go

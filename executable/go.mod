@@ -1,13 +1,13 @@
-module refurbedchallenge/executable
+module clidemo/executable
 
 go 1.18
 
-replace refurbedchallenge/notifier => ../notifier
+replace clidemo/notifier => ../notifier
 
 require (
+	clidemo/notifier v0.0.0-00010101000000-000000000000
 	github.com/golang/mock v1.6.0
 	github.com/stretchr/testify v1.7.1
-	refurbedchallenge/notifier v0.0.0-00010101000000-000000000000
 )
 
 require (
