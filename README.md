@@ -15,7 +15,7 @@ The program should implement graceful shutdown on SIGINT.
 
 **Example usage**
 
-`>./bin/exe -i=1000 -url=http://localhost:8080/notify < test_files/test.txt`
+`> ./bin/exe -i=1000 -url=http://localhost:8080/notify < test_files/test.txt`
 
 ## Assumptions and choices
 
@@ -32,11 +32,15 @@ The program should implement graceful shutdown on SIGINT.
 
 ## How to test app locally
 
-From the project's root folder: `bash setup.sh`, which does the following:
+From the project's root folder: `bash setup.sh`, and then run the following command from the project's root folder:
+
+`> ./executable/bin/exe -i=1000 -url=http://url.com < ./executable/test_files/test.txt`
+
+If you want to run the program with your own test file/input (after downloading the dependencies, that is):
 
 - First, create the test `txt` file that is meant to be streamed to the CLI
 - From the executable module's root folder (that is: `./executable`):
-    - Build the executable in the following directory: `./executable/cmd/cli` -> `go build -o bin/exe ./cmd/cli/main.go`
+    - Build the executable in the following directory: `./cmd/cli` -> `go build -o bin/exe ./cmd/cli/main.go`
     - Run the executable with the desired parameters : `./bin/exe -i=1000 -url=http://url.com < path_to_test_file.txt`
     - You can ask what parameters the CLI accepts by running: `./bin/exe -help`
 
