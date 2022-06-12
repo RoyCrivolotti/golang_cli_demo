@@ -1,8 +1,9 @@
-# refurbed_challenge
+# golang_cli_demo
 
-This repository contains my challenge for `refurbed`.
 
-### Ecosystem in which the application it was run and tested
+This repository contains a personal demo.
+
+### Ecosystem in which the application was run and tested
 
 - MacBook Pro 13-inch 2020, `macOS Monterrey Version 12.3.1`
 - Go version [`go1.18.3.darwin-amd64.pkg`](https://go.dev/dl/)
